@@ -1,0 +1,40 @@
+---
+title: "P8131_HW2"
+output: html_document
+date: "2023-02-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+data = data.frame(
+  dose = c(0, 1, 2, 3, 4),
+  num_d = c(2, 8, 15, 23, 27))
+
+data = 
+  data %>% 
+  mutate(pr_d = num_d/30)
+
+data
+
+```
+
+
+```{r}
+fit_logit =glm(
+  cbind(num_d, 30-num_d) ~ dose, family = binomial(link = 'logit'), data = data)
+summary(fit_logit)
+
+fit_probit =glm(
+  cbind(num_d, 30-num_d) ~ dose, family = binomial(link = 'probit'), data = data)
+summary(fit_probit)
+
+fit_cll =glm(
+  cbind(num_d, 30-num_d) ~ dose, family = binomial(link = 'log'), data = data)
+summary(fit_cll)
+```
+
