@@ -6,6 +6,7 @@ date: "2023-02-17"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ResourceSelection)
 ```
 
 ### QUESTION 1
@@ -33,7 +34,6 @@ se = sqrt(vcov(glm_logit)[2,2])
 beta + c(qnorm(0.025), 0, -qnorm(0.025))*se
 dev = sum(residuals(glm_logit, type='deviance')^2)
 p_est = exp(alfa+beta*0.01)/(1+exp(alfa+beta*0.01))
-p_est
 
 betacov = vcov(glm_logit)
 x0fit = -alfa/beta
@@ -63,7 +63,7 @@ c(x0fit, sqrt(varx0))
 ```
 
 ```{r}
-glm_log = glm(resp~x, family=binomial(link='log'))
+glm_log = glm(resp~x, family=binomial(link='cloglog'))
 summary(glm_log)
 alfa = coef(glm_log)[1]
 beta = coef(glm_log)[2]
@@ -74,7 +74,7 @@ p_est = 1-1/(exp(exp(alfa+beta*0.01)))
 p_est
 
 betacov = vcov(glm_log)
-x0fit = (log(-log(0.5)-alfa))/beta
+x0fit = (log(-log(0.5))-alfa)/beta
 10^x0fit
 varx0 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
 c(x0fit, sqrt(varx0))
@@ -106,20 +106,20 @@ G.res = (y-m*pihat)/sqrt(m*pihat*(1-pihat))
 residuals(glm_logit, type='pearson')
 sum(residuals(glm_logit, type='pearson')^2)
 dev = sum(residuals(glm_logit, type='deviance')^2)
-dev
 pval = 1-pchisq(dev, 15)
 pval
+hoslem.test(glm_logit$y, fitted(glm_logit), g=10)$p.value
 ```
 
 ```{r}
-beta
+exp(beta)
 se = sqrt(vcov(glm_logit)[2,2])
-beta+c(qnorm(0.025), -qnorm(0.025))*se
+exp(beta+c(qnorm(0.025), -qnorm(0.025))*se)
 ```
 ```{r}
 betacov = vcov(glm_logit)
-x40 = log(0.4/(1-0.4))-alfa/beta
-varx40 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
+x40 = (log(0.4/(1-0.4))-alfa)/beta
+varx40 = betacov[1,1]/(beta^2)+betacov[2,2]*((log(0.4/0.6)-alfa)^2)/(beta^4)+2*betacov[1,2]*(log(0.4/0.6)-alfa)/(beta^3)
 c(x40, sqrt(varx40))
 x40+c(qnorm(0.025), -qnorm(0.025))*sqrt(varx40)
 ```

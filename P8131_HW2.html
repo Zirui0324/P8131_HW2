@@ -404,10 +404,8 @@ beta + c(qnorm(0.025), 0, -qnorm(0.025))*se</code></pre>
 <pre><code>## [1] 0.8063266 1.1618949 1.5174633</code></pre>
 <pre class="r"><code>dev = sum(residuals(glm_logit, type=&#39;deviance&#39;)^2)
 p_est = exp(alfa+beta*0.01)/(1+exp(alfa+beta*0.01))
-p_est</code></pre>
-<pre><code>## (Intercept) 
-##  0.09011997</code></pre>
-<pre class="r"><code>betacov = vcov(glm_logit)
+
+betacov = vcov(glm_logit)
 x0fit = -alfa/beta
 10^x0fit</code></pre>
 <pre><code>## (Intercept) 
@@ -463,51 +461,51 @@ c(x0fit, sqrt(varx0))</code></pre>
 ##   2.0063102   0.1742755</code></pre>
 <pre class="r"><code>10^(x0fit+c(qnorm(0.05), -qnorm(0.05))*sqrt(varx0))</code></pre>
 <pre><code>## [1]  52.43877 196.32153</code></pre>
-<pre class="r"><code>glm_log = glm(resp~x, family=binomial(link=&#39;log&#39;))
+<pre class="r"><code>glm_log = glm(resp~x, family=binomial(link=&#39;cloglog&#39;))
 summary(glm_log)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = resp ~ x, family = binomial(link = &quot;log&quot;))
+## glm(formula = resp ~ x, family = binomial(link = &quot;cloglog&quot;))
 ## 
 ## Deviance Residuals: 
 ##       1        2        3        4        5  
-## -1.9224  -0.1768   0.9014   1.6888  -0.5190  
+## -1.0831   0.2132   0.4985   0.5588  -0.6716  
 ## 
 ## Coefficients:
 ##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -1.66644    0.21630  -7.704 1.32e-14 ***
-## x            0.39740    0.05764   6.894 5.41e-12 ***
+## (Intercept)  -1.9942     0.3126  -6.378 1.79e-10 ***
+## x             0.7468     0.1094   6.824 8.86e-12 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 64.763  on 4  degrees of freedom
-## Residual deviance:  7.661  on 3  degrees of freedom
-## AIC: 28.136
+##     Null deviance: 64.7633  on 4  degrees of freedom
+## Residual deviance:  2.2305  on 3  degrees of freedom
+## AIC: 22.706
 ## 
-## Number of Fisher Scoring iterations: 9</code></pre>
+## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>alfa = coef(glm_log)[1]
 beta = coef(glm_log)[2]
 se = sqrt(vcov(glm_log)[2,2])
 beta + c(qnorm(0.025), 0, -qnorm(0.025))*se</code></pre>
-<pre><code>## [1] 0.2844220 0.3973969 0.5103719</code></pre>
+<pre><code>## [1] 0.5323200 0.7468193 0.9613187</code></pre>
 <pre class="r"><code>dev = sum(residuals(glm_log, type=&#39;deviance&#39;)^2)
 p_est = 1-1/(exp(exp(alfa+beta*0.01)))
 p_est</code></pre>
 <pre><code>## (Intercept) 
-##   0.1727688</code></pre>
+##   0.1281601</code></pre>
 <pre class="r"><code>betacov = vcov(glm_log)
-x0fit = (log(-log(0.5)-alfa))/beta
+x0fit = (log(-log(0.5))-alfa)/beta
 10^x0fit</code></pre>
 <pre><code>## (Intercept) 
-##    144.6349</code></pre>
+##     151.157</code></pre>
 <pre class="r"><code>varx0 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
 c(x0fit, sqrt(varx0))</code></pre>
 <pre><code>## (Intercept)           x 
-##   2.1602730   0.1395619</code></pre>
+##   2.1794281   0.1744033</code></pre>
 <pre class="r"><code>10^(x0fit+c(qnorm(0.05), -qnorm(0.05))*sqrt(varx0))</code></pre>
-<pre><code>## [1]  85.25388 245.37592</code></pre>
+<pre><code>## [1]  78.08366 292.61469</code></pre>
 <div id="question-2" class="section level4">
 <h4>QUESTION 2</h4>
 <pre class="r"><code>amount = seq(10, 90, by=5)
@@ -558,25 +556,25 @@ residuals(glm_logit, type=&#39;pearson&#39;)</code></pre>
 <pre class="r"><code>sum(residuals(glm_logit, type=&#39;pearson&#39;)^2)</code></pre>
 <pre><code>## [1] 8.814299</code></pre>
 <pre class="r"><code>dev = sum(residuals(glm_logit, type=&#39;deviance&#39;)^2)
-dev</code></pre>
-<pre><code>## [1] 10.61271</code></pre>
-<pre class="r"><code>pval = 1-pchisq(dev, 15)
+pval = 1-pchisq(dev, 15)
 pval</code></pre>
 <pre><code>## [1] 0.7795345</code></pre>
-<pre class="r"><code>beta</code></pre>
-<pre><code>##          x 
-## 0.03095043</code></pre>
+<pre class="r"><code>hoslem.test(glm_logit$y, fitted(glm_logit), g=10)$p.value</code></pre>
+<pre><code>## [1] 0.9907049</code></pre>
+<pre class="r"><code>exp(beta)</code></pre>
+<pre><code>##        x 
+## 1.031434</code></pre>
 <pre class="r"><code>se = sqrt(vcov(glm_logit)[2,2])
-beta+c(qnorm(0.025), -qnorm(0.025))*se</code></pre>
-<pre><code>## [1] 0.01197845 0.04992240</code></pre>
+exp(beta+c(qnorm(0.025), -qnorm(0.025))*se)</code></pre>
+<pre><code>## [1] 1.01205 1.05119</code></pre>
 <pre class="r"><code>betacov = vcov(glm_logit)
-x40 = log(0.4/(1-0.4))-alfa/beta
-varx40 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
+x40 = (log(0.4/(1-0.4))-alfa)/beta
+varx40 = betacov[1,1]/(beta^2)+betacov[2,2]*((log(0.4/0.6)-alfa)^2)/(beta^4)+2*betacov[1,2]*(log(0.4/0.6)-alfa)/(beta^3)
 c(x40, sqrt(varx40))</code></pre>
 <pre><code>## (Intercept)           x 
-##   52.829290    6.260412</code></pre>
+##   40.134286    4.873174</code></pre>
 <pre class="r"><code>x40+c(qnorm(0.025), -qnorm(0.025))*sqrt(varx40)</code></pre>
-<pre><code>## [1] 40.55911 65.09947</code></pre>
+<pre><code>## [1] 30.58304 49.68553</code></pre>
 </div>
 </div>
 
