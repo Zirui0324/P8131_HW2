@@ -6,35 +6,121 @@ date: "2023-02-17"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
 
-library(tidyverse)
+### QUESTION 1
+
+```{r}
+dose = c(0, 1, 2, 3, 4)
+num_d = c(2, 8, 15, 23, 27)
+num = c(30, 30, 30, 30, 30)
+
+data = data.frame(dose, num, num_d)
+
+x = data$dose
+y = data$num_d
+m = data$num
+resp = cbind(y, m-y)
+```
+
+
+```{r}
+glm_logit = glm(resp~x, family=binomial(link='logit'))
+summary(glm_logit)
+alfa = coef(glm_logit)[1]
+beta = coef(glm_logit)[2]
+se = sqrt(vcov(glm_logit)[2,2])
+beta + c(qnorm(0.025), 0, -qnorm(0.025))*se
+dev = sum(residuals(glm_logit, type='deviance')^2)
+p_est = exp(alfa+beta*0.01)/(1+exp(alfa+beta*0.01))
+p_est
+
+betacov = vcov(glm_logit)
+x0fit = -alfa/beta
+10^x0fit
+varx0 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
+c(x0fit, sqrt(varx0))
+10^(x0fit+c(qnorm(0.05), -qnorm(0.05))*sqrt(varx0))
 ```
 
 ```{r}
-data = data.frame(
-  dose = c(0, 1, 2, 3, 4),
-  num_d = c(2, 8, 15, 23, 27))
+glm_probit = glm(resp~x, family=binomial(link='probit'))
+summary(glm_probit)
+alfa = coef(glm_probit)[1]
+beta = coef(glm_probit)[2]
+se = sqrt(vcov(glm_probit)[2,2])
+beta + c(qnorm(0.025), 0, -qnorm(0.025))*se
+dev = sum(residuals(glm_probit, type='deviance')^2)
+p_est = pnorm(alfa+beta*0.01)
+p_est
 
-data = 
-  data %>% 
-  mutate(pr_d = num_d/30)
-
-data
-
+betacov = vcov(glm_probit)
+x0fit = -alfa/beta
+10^x0fit
+varx0 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
+c(x0fit, sqrt(varx0))
+10^(x0fit+c(qnorm(0.05), -qnorm(0.05))*sqrt(varx0))
 ```
 
+```{r}
+glm_log = glm(resp~x, family=binomial(link='log'))
+summary(glm_log)
+alfa = coef(glm_log)[1]
+beta = coef(glm_log)[2]
+se = sqrt(vcov(glm_log)[2,2])
+beta + c(qnorm(0.025), 0, -qnorm(0.025))*se
+dev = sum(residuals(glm_log, type='deviance')^2)
+p_est = 1-1/(exp(exp(alfa+beta*0.01)))
+p_est
+
+betacov = vcov(glm_log)
+x0fit = (log(-log(0.5)-alfa))/beta
+10^x0fit
+varx0 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
+c(x0fit, sqrt(varx0))
+10^(x0fit+c(qnorm(0.05), -qnorm(0.05))*sqrt(varx0))
+```
+
+#### QUESTION 2
 
 ```{r}
-fit_logit =glm(
-  cbind(num_d, 30-num_d) ~ dose, family = binomial(link = 'logit'), data = data)
-summary(fit_logit)
+amount = seq(10, 90, by=5)
+offers = c(4, 6, 10, 12, 39, 36, 22, 14, 10, 12, 8, 9, 3, 1, 5, 2, 1)
+enrolls = c(0, 2, 4, 2, 12, 14, 10, 7, 5, 5, 3, 5, 2, 0, 4, 2, 1)
 
-fit_probit =glm(
-  cbind(num_d, 30-num_d) ~ dose, family = binomial(link = 'probit'), data = data)
-summary(fit_probit)
+data = data.frame(amount, offers, enrolls)
 
-fit_cll =glm(
-  cbind(num_d, 30-num_d) ~ dose, family = binomial(link = 'log'), data = data)
-summary(fit_cll)
+x = data$amount
+y = data$enrolls
+m = data$offers
+resp = cbind(y, m-y)
+```
+
+```{r}
+glm_logit = glm(resp~x, family=binomial(link='logit'))
+summary(glm_logit)
+alfa = coef(glm_logit)[1]
+beta = coef(glm_logit)[2]
+pihat = fitted(glm_logit)
+G.res = (y-m*pihat)/sqrt(m*pihat*(1-pihat))
+residuals(glm_logit, type='pearson')
+sum(residuals(glm_logit, type='pearson')^2)
+dev = sum(residuals(glm_logit, type='deviance')^2)
+dev
+pval = 1-pchisq(dev, 15)
+pval
+```
+
+```{r}
+beta
+se = sqrt(vcov(glm_logit)[2,2])
+beta+c(qnorm(0.025), -qnorm(0.025))*se
+```
+```{r}
+betacov = vcov(glm_logit)
+x40 = log(0.4/(1-0.4))-alfa/beta
+varx40 = betacov[1,1]/(beta^2)+betacov[2,2]*(alfa^2)/(beta^4)-2*betacov[1,2]*alfa/(beta^3)
+c(x40, sqrt(varx40))
+x40+c(qnorm(0.025), -qnorm(0.025))*sqrt(varx40)
 ```
 
