@@ -447,10 +447,8 @@ beta + c(qnorm(0.025), 0, -qnorm(0.025))*se</code></pre>
 <pre><code>## [1] 0.4967217 0.6863805 0.8760393</code></pre>
 <pre class="r"><code>dev = sum(residuals(glm_probit, type=&#39;deviance&#39;)^2)
 p_est = pnorm(alfa+beta*0.01)
-p_est</code></pre>
-<pre><code>## (Intercept) 
-##   0.0853078</code></pre>
-<pre class="r"><code>betacov = vcov(glm_probit)
+
+betacov = vcov(glm_probit)
 x0fit = -alfa/beta
 10^x0fit</code></pre>
 <pre><code>## (Intercept) 
@@ -492,10 +490,8 @@ beta + c(qnorm(0.025), 0, -qnorm(0.025))*se</code></pre>
 <pre><code>## [1] 0.5323200 0.7468193 0.9613187</code></pre>
 <pre class="r"><code>dev = sum(residuals(glm_log, type=&#39;deviance&#39;)^2)
 p_est = 1-1/(exp(exp(alfa+beta*0.01)))
-p_est</code></pre>
-<pre><code>## (Intercept) 
-##   0.1281601</code></pre>
-<pre class="r"><code>betacov = vcov(glm_log)
+
+betacov = vcov(glm_log)
 x0fit = (log(-log(0.5))-alfa)/beta
 10^x0fit</code></pre>
 <pre><code>## (Intercept) 
@@ -546,16 +542,7 @@ summary(glm_logit)</code></pre>
 beta = coef(glm_logit)[2]
 pihat = fitted(glm_logit)
 G.res = (y-m*pihat)/sqrt(m*pihat*(1-pihat))
-residuals(glm_logit, type=&#39;pearson&#39;)</code></pre>
-<pre><code>##          1          2          3          4          5          6          7 
-## -1.0243724  0.5717600  0.9810994 -0.9711570 -0.2647020  0.3289076  0.5320014 
-##          8          9         10         11         12         13         14 
-##  0.4781082  0.1583651 -0.6722082 -1.0076450 -0.2103582  0.1424593 -1.4004895 
-##         15         16         17 
-##  0.5054964  0.8650220  0.5661196</code></pre>
-<pre class="r"><code>sum(residuals(glm_logit, type=&#39;pearson&#39;)^2)</code></pre>
-<pre><code>## [1] 8.814299</code></pre>
-<pre class="r"><code>dev = sum(residuals(glm_logit, type=&#39;deviance&#39;)^2)
+dev = sum(residuals(glm_logit, type=&#39;deviance&#39;)^2)
 pval = 1-pchisq(dev, 15)
 pval</code></pre>
 <pre><code>## [1] 0.7795345</code></pre>

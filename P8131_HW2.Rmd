@@ -52,7 +52,6 @@ se = sqrt(vcov(glm_probit)[2,2])
 beta + c(qnorm(0.025), 0, -qnorm(0.025))*se
 dev = sum(residuals(glm_probit, type='deviance')^2)
 p_est = pnorm(alfa+beta*0.01)
-p_est
 
 betacov = vcov(glm_probit)
 x0fit = -alfa/beta
@@ -71,7 +70,6 @@ se = sqrt(vcov(glm_log)[2,2])
 beta + c(qnorm(0.025), 0, -qnorm(0.025))*se
 dev = sum(residuals(glm_log, type='deviance')^2)
 p_est = 1-1/(exp(exp(alfa+beta*0.01)))
-p_est
 
 betacov = vcov(glm_log)
 x0fit = (log(-log(0.5))-alfa)/beta
@@ -103,8 +101,6 @@ alfa = coef(glm_logit)[1]
 beta = coef(glm_logit)[2]
 pihat = fitted(glm_logit)
 G.res = (y-m*pihat)/sqrt(m*pihat*(1-pihat))
-residuals(glm_logit, type='pearson')
-sum(residuals(glm_logit, type='pearson')^2)
 dev = sum(residuals(glm_logit, type='deviance')^2)
 pval = 1-pchisq(dev, 15)
 pval
